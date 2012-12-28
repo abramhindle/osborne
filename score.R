@@ -271,4 +271,25 @@ harmScore <- function(x) {
 }
 
 harm <- harmScoreObj(v)
-harmScore(harm)
+#harmScore(harm)
+
+# x is harm
+pcaScore <- function(x, v) {
+  namesv <- names(v)
+  names1 <- namesv[!(namesv %in% c("frame","fps","nsift","nsurf"))]
+  pca <- princomp(v[,names1])
+  pcas <- lapply(c(2:20), function(i) { ourScale( abs ( pca$scores[,i] )  ) })
+  len <- length(x$time)
+  for (t in c(1:len)) {
+    #; cs5("\"SimpleSine\""     ,x$time[t],0.1,1000,20 + pca2[t] * 100)
+    #; cs5("\"SimpleSine\""     ,x$time[t],0.1,1000,20 + pca3[t] * 200)
+    #; cs5("\"SimpleSine\""     ,x$time[t],0.1,1000,20 + pca4[t] * 400)
+    for (i in c(1:length(pcas))) {
+      #cs5("\"SimpleSine\""     ,x$time[t],0.1,1000,20 + pcas[[i]][t] * i * 100)
+      cs5("\"SimpleSine\""     ,x$time[t],0.1,1000 * pcas[[i]][t], 20 + i * 60)
+    }
+
+  }
+
+}
+pcaScore(harm,v)

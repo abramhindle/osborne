@@ -359,3 +359,9 @@ arm     = ar * amod
 ;        delayw arm        
         out aenv*arm
         endin
+
+	instr	SimpleSine
+aamp    adsr (p3*0.1), (p3*0.1), 0.5, (p3*0.1)
+a1	oscil	p4, p5, 1
+	out	a1*aamp
+	endin
