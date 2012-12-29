@@ -57,6 +57,9 @@ cs5 <- function(instr,when,dur,p4,p5) {
 cs11 <- function(instr,when,dur,p4,p5,p6,p7,p8,p9,p10,p11) {
   write(sprintf("i%s %f %f %f %f %f %f %f %f %f %f", as.character(instr), when,dur,p4,p5,p6,p7,p8,p9,p10,p11),file="")
 }
+cs9 <- function(instr,when,dur,p4,p5,p6,p7,p8,p9) {
+  write(sprintf("i%s %f %f %f %f %f %f %f %f", as.character(instr), when,dur,p4,p5,p6,p7,p8,p9),file="")
+}
 
 
 #cs4(1,2,3,4)
@@ -302,9 +305,13 @@ kmeansScore <- function(x, v) {
   kmc <- kmeans( v[,names1] , 12)
   # order by commonly
   notemap <- rev(order(table(kmc$cluster)))
+  xmod <- ourScale( x$mod )
+  xmotion <- ourScale( x$motion )
   for (t in c(1:len)) {
-    cs5("\"SimpleSine\""     ,x$time[t] ,1.0+runif(1),1000,120*notemap[kmc$cluster[t]])
+    # cs5("\"SimpleSine\""     ,x$time[t] ,1.0+runif(1),1000,120*notemap[kmc$cluster[t]])
+    cs9("1902",x$time[t], 1.0+runif(1), 1000, 60*notemap[kmc$cluster[t]], xmod[t], xmotion[t], 0.1, 0.1)
   }
 }
+
 kmeansScore(harm, v)
 pcaScore(harm,v)

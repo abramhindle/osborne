@@ -1,6 +1,8 @@
 sr=44100
 kr=441
 
+maxalloc 1902, 3
+
 gkgbegamp init 1000
 gkgbegcps init 260
 gkgbegmod init 2
@@ -305,6 +307,11 @@ arm    reverb2 arm, 1.5, 0.1
         gkgbegdist2 = p4
         endin
 
+; i"Line1" 0 1 32000 60
+; i"Line1" 0 1 32000 3
+; i"Line1" 0 1 32000 1.5
+; i"Line1" 0 1 32000 1
+; i"Line1" 0 1 32000 0.5
 
         instr Line1
         itab = 1
@@ -334,7 +341,8 @@ adelay3   delay asum3, 1/(3*icps)
        out (asum1 + asum2 + asum3)*iamp
        endin
 
-
+; i"Line" 0 1 32000 0.5
+; 
        instr Line
        p3 = 3*p3
        idur = p3
@@ -360,8 +368,78 @@ arm     = ar * amod
         out aenv*arm
         endin
 
+; e.g. 
+; i"SimpleSine" 0 1 1000 440
+; i"SimpleSine" 0 1 1000 2000
+
 	instr	SimpleSine
 aamp    adsr (p3*0.1), (p3*0.1), 0.5, (p3*0.1)
 a1	oscil	p4, p5, 1
 	out	a1*aamp
 	endin
+
+; 1902.orc
+; i1902  25     9   1000      6.00    .9      .136     .45       .35 
+; i1902  25     9   1000      1000    .9      .136     .45       .35 
+; FLUTE INSTRUMENT BASED ON PERRY COOK'S SLIDE FLUTE
+
+
+
+
+          instr     1902
+
+aflute1   init      0
+ifqc      =         p5;cpspch(p5)     
+ipress    =         p6
+ibreath   =         p7
+ifeedbk1  =         p8
+ifeedbk2  =         p9
+
+; FLOW SETUP
+kenv1     linseg    0, .06, 1.1*ipress, .2, ipress, p3-.16, ipress, .02, 0 
+kenv2     linseg    0, .01, 1, p3-.02, 1, .01, 0
+kenvibr   linseg    0, .5, 0, .5, 1, p3-1, 1 ; VIBRATO ENVELOPE
+
+; THE VALUES MUST BE APPROXIMATELY -1 TO 1 OR THE CUBIC WILL BLOW UP
+aflow1    rand      kenv1
+kvibr     oscil     .1*kenvibr, 5, 1
+
+; ibreath CAN BE USED TO ADJUST THE NOISE LEVEL
+asum1     =         ibreath*aflow1 + kenv1 + kvibr
+asum2     =         asum1 + aflute1*ifeedbk1
+
+afqc      =         1/ifqc - asum1/20000 -9/sr + ifqc/12000000
+
+; EMBOUCHURE DELAY SHOULD BE 1/2 THE BORE DELAY
+; ax      delay     asum2, (1/ifqc-10/sr)/2
+atemp1    delayr    p3
+ax        deltapi   afqc/2                   ; - asum1/ifqc/10 + 1/1000
+          delayw    asum2
+                              
+apoly     =         ax - ax*ax*ax
+asum3     =         apoly + aflute1*ifeedbk2
+
+avalue    tone      asum3, 2000
+
+; BORE, THE BORE LENGTH DETERMINES PITCH.  SHORTER IS HIGHER PITCH
+atemp2    delayr    p3
+aflute1   deltapi   afqc
+          delayw    avalue
+
+          out       avalue*p4*kenv2
+
+          endin
+
+; i1902  0     9   1875      440    .9      .136     .45       .35 
+; i1902  33     0.5   3062   440   .9    .036   .65    .5 
+; i1902  0     0.5   3062   6.1   .9    .036   .65    .5 
+; i1902  0     0.5   3062   6.1   .9    .036   .65    .5 
+; i1902  0     0.5   3062   6.8   .9    .036   .65    .5 
+;i1902  0     2.5   3062   6.2   .9    .036   .65    .5 
+; i1902  0     2.5   3062   6.3   .9    .036   .65    .5 
+; i1902  0     2.5   3062   60   .9    .036   .65    .5 
+; i1902  0     2.5   3062   120   .9    .036   .65    .5 
+; i1902  0     2.5   3062   240   .9    .036   .65    .5 
+; i1902  0     2.5   3062   440   .9    .036   .65    .5 w
+; i1902  0     2.5   3062   880   .9    .036   .1    .1
+; i1902  0     2.5   3062   1200   .9    .036   .65    .5 
