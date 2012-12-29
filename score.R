@@ -278,7 +278,7 @@ pcaScore <- function(x, v) {
   namesv <- names(v)
   names1 <- namesv[!(namesv %in% c("frame","fps","nsift","nsurf"))]
   pca <- princomp(v[,names1])
-  pcas <- lapply(c(2:30), function(i) { ourScale( abs ( pca$scores[,i] )  ) })
+  pcas <- lapply(c(1:12), function(i) { ourScale( abs ( pca$scores[,i] )  ) })
   len <- length(x$time)
   for (t in c(1:len)) {
     #; cs5("\"SimpleSine\""     ,x$time[t],0.1,1000,20 + pca2[t] * 100)
@@ -299,11 +299,11 @@ kmeansScore <- function(x, v) {
   namesv <- names(v)
   names1 <- namesv[!(namesv %in% c("frame","fps","nsift","nsurf"))]
   len <- length(x$time)
-  kmc <- kmeans( v[,names1] , 32)
+  kmc <- kmeans( v[,names1] , 12)
   # order by commonly
   notemap <- rev(order(table(kmc$cluster)))
   for (t in c(1:len)) {
-    cs5("\"SimpleSine\""     ,x$time[t] ,1.0,1000,120*notemap[kmc$cluster[t]])
+    cs5("\"SimpleSine\""     ,x$time[t] ,1.0+runif(1),1000,120*notemap[kmc$cluster[t]])
   }
 }
 kmeansScore(harm, v)
