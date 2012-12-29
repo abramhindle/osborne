@@ -292,4 +292,19 @@ pcaScore <- function(x, v) {
   }
 
 }
+
+#pcaScore(harm,v)
+
+kmeansScore <- function(x, v) {
+  namesv <- names(v)
+  names1 <- namesv[!(namesv %in% c("frame","fps","nsift","nsurf"))]
+  len <- length(x$time)
+  kmc <- kmeans( v[,names1] , 32)
+  # order by commonly
+  notemap <- rev(order(table(kmc$cluster)))
+  for (t in c(1:len)) {
+    cs5("\"SimpleSine\""     ,x$time[t] ,1.0,1000,120*notemap[kmc$cluster[t]])
+  }
+}
+kmeansScore(harm, v)
 pcaScore(harm,v)
