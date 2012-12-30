@@ -287,9 +287,10 @@ pcaScore <- function(x, v) {
     #; cs5("\"SimpleSine\""     ,x$time[t],0.1,1000,20 + pca2[t] * 100)
     #; cs5("\"SimpleSine\""     ,x$time[t],0.1,1000,20 + pca3[t] * 200)
     #; cs5("\"SimpleSine\""     ,x$time[t],0.1,1000,20 + pca4[t] * 400)
-    for (i in c(1:length(pcas))) {
-      cs5("\"SimpleSine\""     ,x$time[t],1.0,1000/i,20 + pcas[[i]][t] * i * 100)
-      cs5("\"SimpleSine\""     ,x$time[t],1.0,1000 * pcas[[i]][t]/i, 20 + i * 60)
+    for (i in c(1:(length(pcas)-1))) {
+      #cs5("\"SimpleSine\""     ,x$time[t],0.333,1000 * pcas[[i]][t]/i, 20 + i * 60 * pcas[[i-1]][t])
+      #cs5("\"SimpleSine\""     ,x$time[t] ,0.33,1000/i * pcas[[i]][t], 20 + i * 60)
+      cs5("\"SimpleSine\""     ,x$time[t] ,0.33,1000/i, 20 + i * 60 * pcas[[i]][t])
     }
 
   }
